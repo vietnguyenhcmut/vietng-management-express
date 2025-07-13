@@ -1,10 +1,10 @@
 // src/controllers/auth.controller.ts
 import { Request, Response } from "express";
-import { createUser, loginUser } from "../services/auth.service";
+import { createUser, loginUser } from "../services/user.auth.service";
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, ...data } = req.body;
 
     if (!email || !password) {
       return res
@@ -12,7 +12,7 @@ export const register = async (req: Request, res: Response) => {
         .json({ message: "Email and password are required" });
     }
 
-    const newUser = await createUser({ email, password });
+    const newUser = await createUser({ email, password, ...data });
 
     const { password: _, ...userWithoutPassword } = newUser;
 

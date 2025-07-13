@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
-import authRoutes from "./routes/auth.route";
+import userAuthRoutes from "./routes/user.auth.route";
 import userRoutes from "./routes/user.route";
 import roomRoutes from "./routes/room.route";
 import customerRoutes from "./routes/customer.route";
@@ -27,7 +27,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello, this is the DQP Cloud Server!");
 });
 
-app.use("/api/auth/user", authRoutes);
+app.use("/api/auth/user", userAuthRoutes);
 app.use("/api/auth/customer", customerAuthRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/customer", customerRoutes);
