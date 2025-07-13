@@ -24,7 +24,7 @@ app.listen(PORT, () => {
 });
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello, this is the DQP Cloud Server!");
+  res.send("Hello, this is the VietNg Management System!");
 });
 
 app.use("/api/auth/user", userAuthRoutes);
