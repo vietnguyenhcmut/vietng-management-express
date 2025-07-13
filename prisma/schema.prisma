@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -14,13 +7,120 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// =============================================
+// ENUMS (Kiểu dữ liệu tùy chỉnh)
+// =============================================
+
+enum RoomType {
+  Standard
+  Deluxe
+  Suite
+}
+
+enum RoomStatus {
+  available @map("Sẵn sàng")
+  cleaning @map("Đang dọn dẹp")
+  fixing @map("Đang sửa chữa")
+  serving @map("Có khách")
+}
+
+enum BookingStatus {
+  pending @map("Chờ xác nhận")
+  issued @map("Đã xác nhận")
+  checked_in @map("Đã nhận phòng")
+  checked_out @map("Đã trả phòng")
+  canceled @map("Đã hủy")
+}
+
+enum DiscountType {
+  percentage
+  fixed
+}
+
+enum PromotionStatus {
+  active @map("Đang hoạt động")
+  coming_soon @map("Chưa bắt đầu")
+  end @map("Đã kết thúc")
+  paused @map("Tạm dừng")
+}
+
+
+// =============================================
+// MODELS (Bảng dữ liệu)
+// =============================================
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  firstName String?
-  lastName  String?
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  firstName   String?
+  lastName    String?
   phoneNumber String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Room {
+  id              String      @id @default(uuid())
+  roomNumber      String      @unique @map("room_number")
+  type            RoomType
+  status          RoomStatus
+  pricePerNight   Decimal     @map("price_per_night")
+  amenities       String[]
+  imageUrl        String?     @map("image_url")
+  createdAt       DateTime    @default(now()) @map("created_at")
+
+  bookings        Booking[] 
+}
+
+model Customer {
+  id           String    @id @default(uuid())
+  fullName     String    @map("full_name")
+  email        String    @unique
+  phoneNumber  String?   @map("phone_number")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  bookings     Booking[] 
+}
+
+model Promotion {
+  id              String               @id @default(uuid())
+  name            String
+  code            String               @unique
+  discountType    DiscountType         @map("discount_type")
+  discountValue   Decimal              @map("discount_value")
+  startDate       DateTime             @map("start_date")
+  endDate         DateTime             @map("end_date")
+  status          PromotionStatus
+  usageCount      Int                  @default(0) @map("usage_count")
+  createdAt       DateTime             @default(now()) @map("created_at")
+
+  bookings        BookingPromotion[] 
+}
+
+model Booking {
+  id            String          @id @default(uuid())
+  customerId    String          @map("customer_id")
+  roomId        String          @map("room_id")
+  checkInDate   DateTime        @db.Date @map("check_in_date")
+  checkOutDate  DateTime        @db.Date @map("check_out_date")
+  numGuests     Int             @map("num_guests")
+  totalPrice    Decimal         @map("total_price")
+  status        BookingStatus
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  customer      Customer        @relation(fields: [customerId], references: [id])
+  room          Room            @relation(fields: [roomId], references: [id])
+  
+  promotions    BookingPromotion[] 
+}
+
+model BookingPromotion {
+  bookingId   String @map("booking_id")
+  promotionId String @map("promotion_id")
+
+  booking     Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+
+  @@id([bookingId, promotionId])
+  @@map("booking_promotions")
 }
