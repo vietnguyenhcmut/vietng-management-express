@@ -1,0 +1,28 @@
+import express, { Express, Request, Response } from "express";
+import cors from "cors";
+import auth from "./routes/auth.route";
+import user from "./routes/user.route";
+
+import dotenv from "dotenv";
+dotenv.config();
+
+const app: Express = express();
+app.use(
+  cors({
+    origin: "http://localhost:3001",
+    credentials: true,
+  })
+);
+app.use(express.json());
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`DQP Cloud Server is running on port ${PORT}`);
+});
+
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello, this is the DQP Cloud Server!");
+});
+
+app.use("/api/auth", auth);
+app.use("/api/user", user);
