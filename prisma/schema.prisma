@@ -7,9 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// =============================================
-// ENUMS (Kiểu dữ liệu tùy chỉnh)
-// =============================================
+// --- ENUMS ---
+enum Role {
+  ADMIN
+  MANAGER
+}
 
 enum RoomType {
   Standard
@@ -18,18 +20,18 @@ enum RoomType {
 }
 
 enum RoomStatus {
-  available @map("Sẵn sàng")
-  cleaning @map("Đang dọn dẹp")
-  fixing @map("Đang sửa chữa")
-  serving @map("Có khách")
+  available   @map("Sẵn sàng")
+  cleaning    @map("Đang dọn dẹp")
+  fixing      @map("Đang sửa chữa")
+  serving     @map("Có khách")
 }
 
 enum BookingStatus {
-  pending @map("Chờ xác nhận")
-  issued @map("Đã xác nhận")
-  checked_in @map("Đã nhận phòng")
+  pending     @map("Chờ xác nhận")
+  issued      @map("Đã xác nhận")
+  checked_in  @map("Đã nhận phòng")
   checked_out @map("Đã trả phòng")
-  canceled @map("Đã hủy")
+  canceled    @map("Đã hủy")
 }
 
 enum DiscountType {
@@ -38,16 +40,18 @@ enum DiscountType {
 }
 
 enum PromotionStatus {
-  active @map("Đang hoạt động")
+  active      @map("Đang hoạt động")
   coming_soon @map("Chưa bắt đầu")
-  end @map("Đã kết thúc")
-  paused @map("Tạm dừng")
+  end         @map("Đã kết thúc")
+  paused      @map("Tạm dừng")
 }
 
 
 // =============================================
 // MODELS (Bảng dữ liệu)
 // =============================================
+
+// Model cho nhân viên nội bộ (Admin, Manager)
 model User {
   id          String   @id @default(cuid())
   email       String   @unique
@@ -55,63 +59,67 @@ model User {
   firstName   String?
   lastName    String?
   phoneNumber String?
+  role        Role    
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
-model Room {
-  id              String      @id @default(uuid())
-  roomNumber      String      @unique @map("room_number")
-  type            RoomType
-  status          RoomStatus
-  pricePerNight   Decimal     @map("price_per_night")
-  amenities       String[]
-  imageUrl        String?     @map("image_url")
-  createdAt       DateTime    @default(now()) @map("created_at")
-
-  bookings        Booking[] 
-}
-
+// Model cho khách hàng đăng ký sử dụng dịch vụ
 model Customer {
-  id           String    @id @default(uuid())
-  fullName     String    @map("full_name")
-  email        String    @unique
-  phoneNumber  String?   @map("phone_number")
-  createdAt    DateTime  @default(now()) @map("created_at")
+  id          String   @id @default(uuid())
+  firstName   String?  @map("first_name")
+  lastName    String?  @map("last_name")
+  email       String   @unique
+  password    String   
+  phoneNumber String?  @map("phone_number")
+  createdAt   DateTime @default(now()) @map("created_at")
 
-  bookings     Booking[] 
+  bookings    Booking[] 
 }
 
-model Promotion {
-  id              String               @id @default(uuid())
-  name            String
-  code            String               @unique
-  discountType    DiscountType         @map("discount_type")
-  discountValue   Decimal              @map("discount_value")
-  startDate       DateTime             @map("start_date")
-  endDate         DateTime             @map("end_date")
-  status          PromotionStatus
-  usageCount      Int                  @default(0) @map("usage_count")
-  createdAt       DateTime             @default(now()) @map("created_at")
+model Room {
+  id            String   @id @default(uuid())
+  roomNumber    String   @unique @map("room_number")
+  type          RoomType
+  status        RoomStatus
+  pricePerNight Decimal  @map("price_per_night")
+  amenities     String[]
+  imageUrl      String?  @map("image_url")
+  createdAt     DateTime @default(now()) @map("created_at")
 
-  bookings        BookingPromotion[] 
+  bookings      Booking[]
 }
 
 model Booking {
-  id            String          @id @default(uuid())
-  customerId    String          @map("customer_id")
-  roomId        String          @map("room_id")
-  checkInDate   DateTime        @db.Date @map("check_in_date")
-  checkOutDate  DateTime        @db.Date @map("check_out_date")
-  numGuests     Int             @map("num_guests")
-  totalPrice    Decimal         @map("total_price")
-  status        BookingStatus
-  createdAt     DateTime        @default(now()) @map("created_at")
+  id           String        @id @default(uuid())
+  customerId   String        @map("customer_id") 
+  roomId       String        @map("room_id")
+  checkInDate  DateTime      @db.Date @map("check_in_date")
+  checkOutDate DateTime      @db.Date @map("check_out_date")
+  numGuests    Int           @map("num_guests")
+  totalPrice   Decimal       @map("total_price")
+  status       BookingStatus
+  createdAt    DateTime      @default(now()) @map("created_at")
 
-  customer      Customer        @relation(fields: [customerId], references: [id])
-  room          Room            @relation(fields: [roomId], references: [id])
-  
-  promotions    BookingPromotion[] 
+  customer     Customer      @relation(fields: [customerId], references: [id]) 
+  room         Room          @relation(fields: [roomId], references: [id])
+
+  promotions   BookingPromotion[]
+}
+
+model Promotion {
+  id            String             @id @default(uuid())
+  name          String
+  code          String             @unique
+  discountType  DiscountType       @map("discount_type")
+  discountValue Decimal            @map("discount_value")
+  startDate     DateTime           @map("start_date")
+  endDate       DateTime           @map("end_date")
+  status        PromotionStatus
+  usageCount    Int                @default(0) @map("usage_count")
+  createdAt     DateTime           @default(now()) @map("created_at")
+
+  bookings      BookingPromotion[]
 }
 
 model BookingPromotion {

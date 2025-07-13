@@ -1,6 +1,13 @@
-GET http://localhost:2001/api/user/about-me/
-Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWQwZXpuM3AwMDAwdnI1MjMxMDh6bXJuIiwiaWF0IjoxNzUyMzM2MTA3LCJleHAiOjE3NTIzNTA1MDd9.4k0XKTw51OWDifgvBiA8KcxL3EwGPUl_aULhgWRamc8
+GET http://localhost:2001/api/room/
 # Content-Type:application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWQxNjViZDEwMDAwdnJudHhqdGdldDRnIiwiaWF0IjoxNzUyMzgwNTc4LCJleHAiOjE3NTIzOTQ5Nzh9.8INlwGzBkRhAgwgneCusWqp3ezqM0PxWyeI75b2bBtE
+
+# {
+#   "roomNumber": "ROOM-001",
+#   "type": "Standard",
+#   "status": "available",
+#   "pricePerNight": 300000
+# }
 
 # {
 #   "email": "nvviet142001@gmail.com",

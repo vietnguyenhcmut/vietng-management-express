@@ -1,7 +1,10 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
-import auth from "./routes/auth.route";
-import user from "./routes/user.route";
+import authRoutes from "./routes/auth.route";
+import userRoutes from "./routes/user.route";
+import roomRoutes from "./routes/room.route";
+import customerRoutes from "./routes/customer.route";
+import customerAuthRoutes from "./routes/customer.auth.route";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -24,5 +27,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello, this is the DQP Cloud Server!");
 });
 
-app.use("/api/auth", auth);
-app.use("/api/user", user);
+app.use("/api/auth/user", authRoutes);
+app.use("/api/auth/customer", customerAuthRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/customer", customerRoutes);
+app.use("/api/room", roomRoutes);

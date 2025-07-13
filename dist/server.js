@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const auth_route_1 = __importDefault(require("./routes/auth.route"));
 const user_route_1 = __importDefault(require("./routes/user.route"));
+const room_route_1 = __importDefault(require("./routes/room.route")); // Thêm dòng này
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -24,3 +25,4 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", auth_route_1.default);
 app.use("/api/user", user_route_1.default);
+app.use("/api/room", room_route_1.default);
